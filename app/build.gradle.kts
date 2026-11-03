@@ -3,10 +3,10 @@ plugins {
 }
 
 android {
-    namespace = "com.project.compose"
+    namespace = "com.blankon.moni"
 
     defaultConfig {
-        applicationId = "com.project.compose"
+        applicationId = "com.blankon.moni"
         versionCode = 1
         versionName = "0.0.1"
 
