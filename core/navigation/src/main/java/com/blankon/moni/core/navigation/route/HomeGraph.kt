@@ -25,6 +25,10 @@ sealed class HomeGraph {
         }
     }
 
+
+    @Serializable
+    data class NoteEditorRoute(val noteId: String? = null) : HomeGraph()
+
     @Serializable
     data object HomeFetchApiRoute : HomeGraph()
 }

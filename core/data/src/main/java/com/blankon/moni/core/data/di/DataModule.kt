@@ -1,13 +1,20 @@
 package com.blankon.moni.core.data.di
 
+
 import android.content.Context
-import com.chuckerteam.chucker.api.ChuckerCollector
-import com.chuckerteam.chucker.api.ChuckerInterceptor
+import androidx.room.Room
 import com.blankon.moni.core.data.BuildConfig.DEBUG
 import com.blankon.moni.core.data.repository.AppRepository
 import com.blankon.moni.core.data.repository.AppRepositoryImpl
+import com.blankon.moni.core.data.repository.NotesRepository
+import com.blankon.moni.core.data.repository.NotesRepositoryImpl
 import com.blankon.moni.core.data.source.local.AppDataStore
+import com.blankon.moni.core.data.source.local.dao.ListItemDao
+import com.blankon.moni.core.data.source.local.dao.NoteDao
+import com.blankon.moni.core.data.source.local.database.MoniDatabase
 import com.blankon.moni.core.data.source.remote.ApiService
+import com.chuckerteam.chucker.api.ChuckerCollector
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,6 +26,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
 import okhttp3.logging.HttpLoggingInterceptor.Level.NONE
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -26,6 +34,26 @@ class DataModule {
 
     @Provides
     fun provideRepository(apiService: ApiService): AppRepository = AppRepositoryImpl(apiService)
+
+    @Provides
+    @Singleton
+    fun provideMoniDatabase(
+        @ApplicationContext context: Context
+    ): MoniDatabase = Room.databaseBuilder(
+        context,
+        MoniDatabase::class.java,
+        MoniDatabase.DATABASE_NAME
+    ).build()
+
+    @Provides
+    fun provideNoteDao(database: MoniDatabase): NoteDao = database.noteDao()
+
+    @Provides
+    fun provideListItemDao(database: MoniDatabase): ListItemDao = database.listItemDao()
+
+    @Provides
+    fun provideNotesRepository(noteDao: NoteDao): NotesRepository =
+        NotesRepositoryImpl(noteDao)
 
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
