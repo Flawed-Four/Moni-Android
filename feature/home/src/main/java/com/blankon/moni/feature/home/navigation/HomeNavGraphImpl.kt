@@ -15,8 +15,10 @@ import com.blankon.moni.feature.home.screen.HomeDataClassScreen
 import com.blankon.moni.feature.home.screen.HomeDataTypeScreen
 import com.blankon.moni.feature.home.screen.HomeFetchApiScreen
 import com.blankon.moni.feature.home.screen.HomeLandingScreen
+import com.blankon.moni.feature.home.screen.NoteDetailScreen
 import com.blankon.moni.feature.home.screen.NoteEditorScreen
 import javax.inject.Inject
+
 
 class HomeNavGraphImpl @Inject constructor() : BaseNavGraph {
     override fun NavGraphBuilder.createGraph(navController: NavController) {
@@ -29,9 +31,18 @@ class HomeNavGraphImpl @Inject constructor() : BaseNavGraph {
                     // Navigate to AI Assistant
                 },
                 onNoteClick = { noteId ->
-                    navController.navigateTo(HomeGraph.NoteEditorRoute(noteId))
+                    navController.navigateTo(HomeGraph.NoteDetailRoute(noteId))
                 },
                 navController = navController
+            )
+        }
+        composableScreen<HomeGraph.NoteDetailRoute> { backStackEntry ->
+            val route = backStackEntry.toRoute<HomeGraph.NoteDetailRoute>()
+            NoteDetailScreen(
+                noteId = route.noteId,
+                onBack = { navController.popBackStack() },
+                onEdit = { navController.navigateTo(HomeGraph.NoteEditorRoute(route.noteId)) },
+                onDeleted = { navController.popBackStack() }
             )
         }
         composableScreen<HomeGraph.NoteEditorRoute> { backStackEntry ->
